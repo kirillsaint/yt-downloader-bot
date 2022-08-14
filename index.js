@@ -3,6 +3,7 @@ require("dotenv").config();
 const { Telegraf } = require("telegraf");
 const { ru } = require("./messages");
 const search = require("./handlers/search");
+const { checkToken } = require("./handlers/check");
 const download = require("./handlers/download");
 const ytdl = require("ytdl-core");
 const rateLimit = require("telegraf-ratelimit");
@@ -54,7 +55,16 @@ bot.catch(async (err, ctx) => {
 bot.use(rateLimit(limitConfig));
 
 bot.start(async (ctx) => {
-	await ctx.replyWithHTML(ru.start, { disable_web_page_preview: true });
+	const error = await checkToken();
+	if (!error) {
+		await ctx.replyWithHTML(`${ru.start}`, {
+			disable_web_page_preview: true,
+		});
+	} else {
+		await ctx.replyWithHTML(`${ru.start}\n\n${ru.youtubeSearchError}`, {
+			disable_web_page_preview: true,
+		});
+	}
 });
 
 bot.on("text", async (ctx) => {
@@ -91,45 +101,51 @@ bot.on("text", async (ctx) => {
 
 		return;
 	}
-	const tempMessage = await ctx.replyWithHTML(ru.searchStart);
+	const error = await checkToken();
 
-	const { items: data } = await search(ctx.message.text);
+	if (!error) {
+		const tempMessage = await ctx.replyWithHTML(ru.searchStart);
 
-	keyboard_buttons = [];
+		const { items: data } = await search(ctx.message.text);
 
-	for (const item of data) {
-		keyboard_buttons.push([
-			{
-				text: item.snippet.title,
-				callback_data: JSON.stringify({
-					action: "download",
-					videoId: item.id.videoId,
-				}),
-			},
-		]);
-	}
+		keyboard_buttons = [];
 
-	if (keyboard_buttons.length === 0) {
+		for (const item of data) {
+			keyboard_buttons.push([
+				{
+					text: item.snippet.title,
+					callback_data: JSON.stringify({
+						action: "download",
+						videoId: item.id.videoId,
+					}),
+				},
+			]);
+		}
+
+		if (keyboard_buttons.length === 0) {
+			ctx.telegram.editMessageText(
+				ctx.chat.id,
+				tempMessage.message_id,
+				null,
+				ru.notFound,
+				{ parse_mode: "HTML" }
+			);
+			return;
+		}
+
 		ctx.telegram.editMessageText(
 			ctx.chat.id,
 			tempMessage.message_id,
 			null,
-			ru.notFound,
-			{ parse_mode: "HTML" }
+			ru.results,
+			{
+				parse_mode: "HTML",
+				reply_markup: { inline_keyboard: keyboard_buttons },
+			}
 		);
-		return;
+	} else {
+		await ctx.replyWithHTML(ru.youtubeSearchError);
 	}
-
-	ctx.telegram.editMessageText(
-		ctx.chat.id,
-		tempMessage.message_id,
-		null,
-		ru.results,
-		{
-			parse_mode: "HTML",
-			reply_markup: { inline_keyboard: keyboard_buttons },
-		}
-	);
 });
 
 bot.on("callback_query", async (ctx) => {
