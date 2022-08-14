@@ -31,9 +31,7 @@ const escapeHTML = (str) =>
 bot.catch(async (err, ctx) => {
 	let errorText = `<b>[ОШИБКА]</b>: <code>${escapeHTML(
 		err.toString()
-	)}</code>\n\n<b>Информация:</b>\n<b>Update Type:</b> <code>${
-		ctx.updateType
-	}</code>`;
+	)}</code>\n\n<b>Update Type:</b> <code>${ctx.updateType}</code>`;
 	if (ctx.match) errorText += `\n<b>Match:</b> <code>${ctx.match[0]}</code>`;
 	if (ctx.from && ctx.from.id)
 		errorText += `\n\n<b>User</b>: <a href="tg://user?id=${
