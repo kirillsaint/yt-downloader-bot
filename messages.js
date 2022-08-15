@@ -1,5 +1,5 @@
 const ru = {
-	start: `<b>👋 Привет!</b>\n\nЯ могу скачать видео с <b>YouTube</b>.\nОтправь ссылку на видео или введи его название.\nТак же есть Inline-режим:\n\n<code>@ytdaun_bot me at the zoo</code>\n<code>@ytdaun_bot https://www.youtube.com/watch?v=jNQXAC9IVRw</code>\n\n<a href="tg://user?id=${process.env.ADMIN_ID}">Разработчик</a> | <a href='https://github.com/kirillsaint/yt-downloader-bot'>Исходный код</a>`,
+	start: `<b>👋 Привет!</b>\n\nЯ могу скачать видео с <b>YouTube</b>.\nОтправь ссылку на видео или введи его название.\nТак же есть <b>Inline-режим</b>:\n\n<code>@ytdaun_bot me at the zoo</code>\n<code>@ytdaun_bot https://www.youtube.com/watch?v=jNQXAC9IVRw</code>\n\n<a href="tg://user?id=${process.env.ADMIN_ID}">Разработчик</a> | <a href='https://github.com/kirillsaint/yt-downloader-bot'>Исходный код</a>`,
 	searchStart: "<b>🔍 Начинаю поиск...</b>",
 	error:
 		"<b>❗️ Произошла ошибка!</b>\n\n<i>Информация уже передана разработчику</i>",
