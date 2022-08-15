@@ -1,10 +1,12 @@
 require("dotenv").config();
+require("./handlers/format");
 
 const { Telegraf } = require("telegraf");
 const { ru } = require("./messages");
 const search = require("./handlers/search");
 const { checkToken } = require("./handlers/check");
 const download = require("./handlers/download");
+const catchHandler = require("./handlers/catch");
 const ytdl = require("ytdl-core");
 const rateLimit = require("telegraf-ratelimit");
 
@@ -29,35 +31,14 @@ const escapeHTML = (str) =>
 			}[tag] || tag)
 	);
 
-bot.catch(async (err, ctx) => {
-	let errorText = `<b>[ОШИБКА]</b>: <code>${escapeHTML(
-		err.toString()
-	)}</code>\n\n<b>Update Type:</b> <code>${ctx.updateType}</code>`;
-
-	if (ctx.message.text)
-		errorText += `\n<b>Message text:</b> <code>${escapeHTML(
-			ctx.message.text
-		)}</code>`;
-	if (ctx.match) errorText += `\n<b>Match:</b> <code>${ctx.match[0]}</code>`;
-	if (ctx.from && ctx.from.id)
-		errorText += `\n\n<b>User</b>: <a href="tg://user?id=${
-			ctx.from.id
-		}">${escapeHTML(ctx.from.first_name)}</a> #user_${ctx.from.id}`;
-
-	ctx.telegram.sendMessage(process.env.ADMIN_ID, errorText, {
-		parse_mode: "html",
-	});
-	ctx.telegram.sendMessage(ctx.chat.id, ru.error, {
-		parse_mode: "html",
-	});
-});
+bot.catch(catchHandler);
 
 bot.use(rateLimit(limitConfig));
 
 bot.start(async (ctx) => {
 	const error = await checkToken();
 	if (!error) {
-		await ctx.replyWithHTML(`${ru.start}`, {
+		await ctx.replyWithHTML(ru.start, {
 			disable_web_page_preview: true,
 		});
 	} else {
@@ -86,10 +67,12 @@ bot.on("text", async (ctx) => {
 		try {
 			await ctx.replyWithVideo(video, {
 				parse_mode: "HTML",
-				caption: ru.downloadEnd,
+				caption: ru.downloadEnd.format(
+					`https://youtube.com/watch?v=${info.videoDetails.videoId}`
+				),
 			});
 			await ctx.telegram.deleteMessage(ctx.chat.id, tempMessage.message_id);
-		} catch {
+		} catch (e) {
 			await ctx.telegram.editMessageText(
 				ctx.chat.id,
 				tempMessage.message_id,
@@ -179,7 +162,9 @@ bot.on("callback_query", async (ctx) => {
 		try {
 			await ctx.replyWithVideo(video, {
 				parse_mode: "HTML",
-				caption: ru.downloadEnd,
+				caption: ru.downloadEnd.format(
+					`https://youtube.com/watch?v=${info.videoDetails.videoId}`
+				),
 			});
 			await ctx.telegram.deleteMessage(ctx.chat.id, tempMessage.message_id);
 		} catch (e) {
