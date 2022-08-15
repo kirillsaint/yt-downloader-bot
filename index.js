@@ -18,19 +18,6 @@ const limitConfig = {
 	onLimitExceeded: (ctx) => ctx.replyWithHTML(ru.ratelimit),
 };
 
-const escapeHTML = (str) =>
-	str.replace(
-		/[&<>'"]/g,
-		(tag) =>
-			({
-				"&": "&amp;",
-				"<": "&lt;",
-				">": "&gt;",
-				"'": "&#39;",
-				'"': "&quot;",
-			}[tag] || tag)
-	);
-
 bot.catch(catchHandler);
 
 bot.use(rateLimit(limitConfig));
