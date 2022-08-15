@@ -18,10 +18,12 @@ module.exports = async (err, ctx) => {
 		err.toString()
 	)}</code>\n\n<b>Update Type:</b> <code>${ctx.updateType}</code>`;
 
-	if (ctx.message.text)
-		errorText += `\n<b>Message text:</b> <code>${escapeHTML(
-			ctx.message.text
-		)}</code>`;
+	try {
+		if (ctx.message.text)
+			errorText += `\n<b>Message text:</b> <code>${escapeHTML(
+				ctx.message.text
+			)}</code>`;
+	} catch {}
 	if (ctx.match) errorText += `\n<b>Match:</b> <code>${ctx.match[0]}</code>`;
 	if (ctx.from && ctx.from.id)
 		errorText += `\n\n<b>User</b>: <a href="tg://user?id=${
@@ -31,7 +33,9 @@ module.exports = async (err, ctx) => {
 	ctx.telegram.sendMessage(process.env.ADMIN_ID, errorText, {
 		parse_mode: "html",
 	});
-	ctx.telegram.sendMessage(ctx.chat.id, ru.error, {
-		parse_mode: "html",
-	});
+	try {
+		ctx.telegram.sendMessage(ctx.chat.id, ru.error, {
+			parse_mode: "html",
+		});
+	} catch {}
 };

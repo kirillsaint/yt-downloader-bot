@@ -6,6 +6,7 @@ const { ru } = require("./messages");
 const search = require("./handlers/search");
 const { checkToken } = require("./handlers/check");
 const download = require("./handlers/download");
+const inlineHandler = require("./handlers/inline");
 const catchHandler = require("./handlers/catch");
 const ytdl = require("ytdl-core");
 const rateLimit = require("telegraf-ratelimit");
@@ -21,6 +22,8 @@ const limitConfig = {
 bot.catch(catchHandler);
 
 bot.use(rateLimit(limitConfig));
+
+bot.on("inline_query", inlineHandler);
 
 bot.start(async (ctx) => {
 	const error = await checkToken();
