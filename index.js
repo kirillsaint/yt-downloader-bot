@@ -55,7 +55,7 @@ bot.on("text", async (ctx) => {
 		let video = await download(info.formats);
 
 		try {
-			await ctx.replyWithVideo(video, {
+			await ctx.replyWithVideo(video.url, {
 				parse_mode: "HTML",
 				caption: ru.downloadEnd.format(
 					`https://youtube.com/watch?v=${info.videoDetails.videoId}`
@@ -150,7 +150,7 @@ bot.on("callback_query", async (ctx) => {
 		let video = await download(info.formats);
 
 		try {
-			await ctx.replyWithVideo(video, {
+			await ctx.replyWithVideo(video.url, {
 				parse_mode: "HTML",
 				caption: ru.downloadEnd.format(
 					`https://youtube.com/watch?v=${info.videoDetails.videoId}`

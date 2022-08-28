@@ -53,19 +53,33 @@ module.exports = async (ctx) => {
 						`http://www.youtube.com/watch?v=${item.id.videoId}`
 					);
 					const video = await download(info.formats);
-					results.push({
-						type: "video",
-						id: `${item.id.videoId}`,
-						title: `${item.snippet.title}`,
-						video_url: video,
-						thumb_url: info.videoDetails.thumbnails[0].url,
-						description: `${item.snippet.description}`,
-						mime_type: "video/mp4",
-						caption: ru.downloadEnd.format(
-							`http://www.youtube.com/watch?v=${item.id.videoId}`
-						),
-						parse_mode: "HTML",
-					});
+					if (parseInt(video.contentLength) > 49000000) {
+						results.push({
+							type: "article",
+							id: `${info.videoDetails.videoId}`,
+							title: `${item.snippet.title}`,
+							thumb_url: info.videoDetails.thumbnails[0].url,
+							description: `${item.snippet.description}`,
+							input_message_content: {
+								message_text: `${ru.uploadFailed} https://youtubdle.com/watch?v=${info.videoDetails.videoId}`,
+								parse_mode: "HTML",
+							},
+						});
+					} else {
+						results.push({
+							type: "video",
+							id: `${item.id.videoId}`,
+							title: `${item.snippet.title}`,
+							video_url: video.url,
+							thumb_url: info.videoDetails.thumbnails[0].url,
+							description: `${item.snippet.description}`,
+							mime_type: "video/mp4",
+							caption: ru.downloadEnd.format(
+								`http://www.youtube.com/watch?v=${item.id.videoId}`
+							),
+							parse_mode: "HTML",
+						});
+					}
 				} catch (e) {
 					console.log(e);
 				}
@@ -76,7 +90,7 @@ module.exports = async (ctx) => {
 				const video = await download(info.formats);
 				results.push({
 					type: "video",
-					id: `${info.videoDetails.videoId}`,
+					id: `${item.id.videoId}`,
 					title: `${info.videoDetails.title}`,
 					video_url: video,
 					thumb_url: info.videoDetails.thumbnails[0].url,

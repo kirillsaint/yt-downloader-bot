@@ -6,7 +6,7 @@ const download = async (formats) => {
 		{ quality: "highest" }
 	);
 
-	return video.url;
+	return video;
 };
 
 module.exports = download;
