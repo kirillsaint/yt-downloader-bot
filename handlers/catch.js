@@ -31,6 +31,13 @@ module.exports = async (err, ctx) => {
 			)}</code>`;
 		}
 	} catch {}
+	try {
+		if (ctx.callbackQuery.data) {
+			errorText += `\n<b>Callback Data:</b> <code>${escapeHTML(
+				ctx.callbackQuery.data
+			)}</code>`;
+		}
+	} catch {}
 	if (ctx.match) errorText += `\n<b>Match:</b> <code>${ctx.match[0]}</code>`;
 	if (ctx.from && ctx.from.id)
 		errorText += `\n\n<b>User</b>: <a href="tg://user?id=${
