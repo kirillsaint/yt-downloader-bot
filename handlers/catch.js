@@ -24,6 +24,13 @@ module.exports = async (err, ctx) => {
 				ctx.message.text
 			)}</code>`;
 	} catch {}
+	try {
+		if (ctx.inlineQuery.query) {
+			errorText += `\n<b>Query:</b> <code>${escapeHTML(
+				ctx.inlineQuery.query
+			)}</code>`;
+		}
+	} catch {}
 	if (ctx.match) errorText += `\n<b>Match:</b> <code>${ctx.match[0]}</code>`;
 	if (ctx.from && ctx.from.id)
 		errorText += `\n\n<b>User</b>: <a href="tg://user?id=${
