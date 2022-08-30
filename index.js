@@ -169,7 +169,12 @@ bot.on("callback_query", async (ctx) => {
 	}
 });
 
-bot.launch();
+if(process.env.NODE_ENV === 'development') {
+	bot.launch();
+} else {
+	bot.startWebhook('/messages', null, 8443);
+  	bot.launch();
+}
 
 // Enable graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));
