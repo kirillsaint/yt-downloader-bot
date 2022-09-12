@@ -3,6 +3,7 @@ const { checkToken } = require("./check");
 const search = require("./search");
 const download = require("./download");
 const ytdl = require("ytdl-core");
+const Catch = require("./catch");
 
 module.exports = async (ctx) => {
 	let results = [];
@@ -81,7 +82,20 @@ module.exports = async (ctx) => {
 						});
 					}
 				} catch (e) {
-					console.log(e);
+					await Catch(e, ctx);
+					await ctx.answerInlineQuery([
+						{
+							type: "article",
+							id: "1",
+							title: "❗️",
+							input_message_content: {
+								message_text: ru.youtubeSearchError,
+								parse_mode: "HTML",
+							},
+							description: ru.apiInlineError,
+						},
+					]);
+					return;
 				}
 			}
 		} else {
@@ -90,7 +104,7 @@ module.exports = async (ctx) => {
 				const video = await download(info.formats);
 				results.push({
 					type: "video",
-					id: `${item.id.videoId}`,
+					id: `${info.videoDetails.videoId}`,
 					title: `${info.videoDetails.title}`,
 					video_url: video,
 					thumb_url: info.videoDetails.thumbnails[0].url,
@@ -102,11 +116,11 @@ module.exports = async (ctx) => {
 					parse_mode: "HTML",
 				});
 			} catch (e) {
-				console.log(e);
+				await Catch(e, ctx);
 			}
 		}
 	} catch (e) {
-		console.log(e);
+		await Catch(e, ctx);
 		await ctx.answerInlineQuery([
 			{
 				type: "article",
