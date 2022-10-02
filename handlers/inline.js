@@ -106,7 +106,7 @@ module.exports = async (ctx) => {
 					type: "video",
 					id: `${info.videoDetails.videoId}`,
 					title: `${info.videoDetails.title}`,
-					video_url: video,
+					video_url: video.url,
 					thumb_url: info.videoDetails.thumbnails[0].url,
 					description: `${info.videoDetails.description}`,
 					mime_type: "video/mp4",
