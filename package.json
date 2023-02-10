@@ -9,7 +9,7 @@
 	},
 	"keywords": [],
 	"author": "kirillsaint",
-	"license": "ISC",
+	"license": "MIT",
 	"devDependencies": {
 		"nodemon": "^2.0.19"
 	},
